@@ -1,14 +1,8 @@
-# modules/webserver/main.tf
-# ═══════════════════════════════════════════════════════════
 
-# ─────────────────────────────────────────
-# Security Group
-# ─────────────────────────────────────────
 resource "aws_security_group" "this" {
   name        = "${var.server_name}-sg"
   description = "Security group for ${var.server_name}"
 
-  # Dynamic block للبورتات
   dynamic "ingress" {
     for_each = var.allowed_ports
     content {
@@ -35,9 +29,6 @@ resource "aws_security_group" "this" {
   )
 }
 
-# ─────────────────────────────────────────
-# EC2 Instance
-# ─────────────────────────────────────────
 resource "aws_instance" "this" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
@@ -62,9 +53,6 @@ resource "aws_instance" "this" {
   )
 }
 
-# ─────────────────────────────────────────
-# Elastic IP
-# ─────────────────────────────────────────
 resource "aws_eip" "this" {
   instance = aws_instance.this.id
   domain   = "vpc"

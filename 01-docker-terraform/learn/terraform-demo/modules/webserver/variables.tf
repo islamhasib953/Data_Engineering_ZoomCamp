@@ -1,21 +1,21 @@
 variable "server_name" {
-  description = "اسم السيرفر"
+  description = "server name"
   type        = string
 }
 
 variable "instance_type" {
-  description = "نوع الـ Instance"
+  description = "EC2 Instance Type"
   type        = string
   default     = "t2.micro"
 }
 
 variable "ami_id" {
-  description = "معرف الـ AMI"
+  description = "AMI ID for the EC2 instance"
   type        = string
 }
 
 variable "environment" {
-  description = "البيئة (dev, staging, prod)"
+  description = "Environment (dev, staging, prod)"
   type        = string
 
   validation {
@@ -25,13 +25,13 @@ variable "environment" {
 }
 
 variable "allowed_ports" {
-  description = "البورتات المسموح بها"
+  description = "Allowed ports"
   type        = list(number)
   default     = [22, 80, 443]
 }
 
 variable "tags" {
-  description = "Tags إضافية"
+  description = "Additional tags"
   type        = map(string)
   default     = {}
 }

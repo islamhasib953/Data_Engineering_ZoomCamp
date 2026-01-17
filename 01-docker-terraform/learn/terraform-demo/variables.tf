@@ -1,11 +1,6 @@
-# variables.tf
-# ═══════════════════════════════════════════════════════════
 
-# ─────────────────────────────────────────
-# General Variables
-# ─────────────────────────────────────────
 variable "project_name" {
-  description = "اسم المشروع"
+  description = "project name"
   type        = string
 }
 
@@ -16,13 +11,10 @@ variable "aws_region" {
 }
 
 variable "environment" {
-  description = "البيئة (dev, staging, prod)"
+  description = "Environment (e.g., dev, staging, prod)"
   type        = string
 }
 
-# ─────────────────────────────────────────
-# EC2 Variables
-# ─────────────────────────────────────────
 variable "ami_id" {
   description = "AMI ID for EC2 instances"
   type        = string
@@ -40,17 +32,14 @@ variable "api_instance_type" {
   default     = "t2.small"
 }
 
-# ─────────────────────────────────────────
-# Feature Flags
-# ─────────────────────────────────────────
 variable "create_api_server" {
-  description = "هل تنشئ API Server؟"
+  description = "Create API Server?"
   type        = bool
   default     = false
 }
 
 variable "web_server_count" {
-  description = "عدد Web Servers"
+  description = "Number of web servers to create"
   type        = number
   default     = 1
 }

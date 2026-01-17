@@ -1,9 +1,4 @@
-# outputs.tf
-# ═══════════════════════════════════════════════════════════
 
-# ─────────────────────────────────────────
-# Web Servers Outputs
-# ─────────────────────────────────────────
 output "web_servers_ips" {
   description = "Public IPs of web servers"
   value       = module.web_server[*].public_ip
@@ -19,9 +14,6 @@ output "web_servers_ids" {
   value       = module.web_server[*].instance_id
 }
 
-# ─────────────────────────────────────────
-# API Server Outputs
-# ─────────────────────────────────────────
 output "api_server_ip" {
   description = "Public IP of API server"
   value       = var.create_api_server ? module.api_server[0].public_ip : null
@@ -32,11 +24,8 @@ output "api_server_url" {
   value       = var.create_api_server ? "http://${module.api_server[0].public_ip}:8080" : null
 }
 
-# ─────────────────────────────────────────
-# Summary
-# ─────────────────────────────────────────
 output "project_summary" {
-  description = "ملخص المشروع"
+  description = "Summary of the deployed project"
   value = {
     project     = var.project_name
     environment = var.environment

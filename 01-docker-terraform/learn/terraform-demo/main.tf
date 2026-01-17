@@ -1,9 +1,4 @@
-# main.tf
-# ═══════════════════════════════════════════════════════════
 
-# ─────────────────────────────────────────
-# Local Variables
-# ─────────────────────────────────────────
 locals {
   common_tags = {
     Project     = var.project_name
@@ -13,9 +8,6 @@ locals {
   }
 }
 
-# ─────────────────────────────────────────
-# Web Servers (Multiple)
-# ─────────────────────────────────────────
 module "web_server" {
   source = "./modules/webserver"
   count  = var.web_server_count
@@ -28,9 +20,6 @@ module "web_server" {
   tags          = local.common_tags
 }
 
-# ─────────────────────────────────────────
-# API Server (Conditional)
-# ─────────────────────────────────────────
 module "api_server" {
   source = "./modules/webserver"
   count  = var.create_api_server ? 1 : 0

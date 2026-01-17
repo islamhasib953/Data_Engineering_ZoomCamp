@@ -1,20 +1,16 @@
-# backend-setup/main.tf
-# هذا الملف تشغله مرة واحدة فقط لإنشاء البنية التحتية للـ Backend
 
 provider "aws" {
   region = "us-east-1"
 }
 
-# S3 Bucket لتخزين State
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "my-terraform-state-bucket-12345"  # لازم يكون unique
+  bucket = "my-terraform-state-bucket-12345"
 
   tags = {
     Name = "Terraform State"
   }
 }
 
-# تفعيل Versioning
 resource "aws_s3_bucket_versioning" "enabled" {
   bucket = aws_s3_bucket.terraform_state.id
   versioning_configuration {
@@ -22,7 +18,6 @@ resource "aws_s3_bucket_versioning" "enabled" {
   }
 }
 
-# تفعيل Encryption
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
   bucket = aws_s3_bucket.terraform_state.id
 
@@ -33,7 +28,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
   }
 }
 
-# منع Public Access
 resource "aws_s3_bucket_public_access_block" "public_access" {
   bucket                  = aws_s3_bucket.terraform_state.id
   block_public_acls       = true
@@ -42,7 +36,6 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   restrict_public_buckets = true
 }
 
-# DynamoDB Table للـ State Locking
 resource "aws_dynamodb_table" "terraform_locks" {
   name         = "terraform-state-locks"
   billing_mode = "PAY_PER_REQUEST"
