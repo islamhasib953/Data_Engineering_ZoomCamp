@@ -1,44 +1,58 @@
-# Module 1 Homework: Docker & SQL
+# Data Engineering Zoomcamp 2026 - Module 1 Homework
 
-**Data Engineering Zoomcamp 2026**  
-**Due Date:** 27 January 2026 01:59 (local time)
+Solutions for Docker, SQL, and Terraform assignments.
 
 ---
 
-## Question 1: Understanding Docker Images
+## Environment Setup
 
-**Question:** Run docker with the `python:3.13` image. Use an entrypoint bash to interact with the container. What's the version of pip in the image?
+### Prerequisites
+- Docker & Docker Compose
+- PostgreSQL 17
+- pgAdmin 4
+- Python 3.13
 
-**Answer:** `25.3` ✓
+### Data Ingestion
+Downloaded and processed NYC Green Taxi trip data for November 2025 along with taxi zone lookup data.
 
-**Command:**
+```bash
+wget https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2025-11.parquet
+wget https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv
+```
+
+---
+
+## Solutions
+
+### Question 1: Docker Image Version Check
+
+Verified pip version in the official Python 3.13 Docker image.
+
 ```bash
 docker run -it --entrypoint bash python:3.13
 pip --version
 ```
 
----
-
-## Question 2: Understanding Docker Networking and Docker-Compose
-
-**Question:** Given the docker-compose.yaml, what is the hostname and port that pgadmin should use to connect to the postgres database?
-
-**Answer:** `db:5433` ✓
-
-**Explanation:**
-- **Hostname:** `db` (the service name in docker-compose)
-- **Port:** `5433` (the port mapping in docker-compose)
-- From pgadmin container's perspective, it connects to the service name `db` on port 5433
+**Answer: 25.3**
 
 ---
 
-## Question 3: Counting Short Trips
+### Question 2: Docker Networking Configuration
 
-**Question:** For the trips in November 2025 (lpep_pickup_datetime between '2025-11-01' and '2025-12-01', exclusive of the upper bound), how many trips had a trip_distance of less than or equal to 1 mile?
+Analyzed the docker-compose configuration to determine the correct connection parameters for pgAdmin to connect to PostgreSQL.
 
-**Answer:** `8,007` ✓
+Given the service name `db` and port mapping `5433:5432`, the connection details are:
+- Hostname: `db` (service name within Docker network)
+- Port: `5433`
 
-**SQL Query:**
+**Answer: db:5433**
+
+---
+
+### Question 3: Trip Distance Analysis
+
+Analyzed trips for November 2025 to count rides with distance ≤ 1 mile.
+
 ```sql
 SELECT COUNT(*)
 FROM green_taxi_data
@@ -47,24 +61,14 @@ WHERE lpep_pickup_datetime >= '2025-11-01'
   AND trip_distance <= 1;
 ```
 
-**Result:**
-```
-+-------+
-| count |
-|-------|
-| 8007  |
-+-------+
-```
+**Answer: 8,007 trips**
 
 ---
 
-## Question 4: Longest Trip for Each Day
+### Question 4: Maximum Daily Trip Distance
 
-**Question:** Which was the pick up day with the longest trip distance? Only consider trips with trip_distance less than 100 miles (to exclude data errors). Use the pick up time for your calculations.
+Identified the day with the longest trip distance (excluding outliers > 100 miles).
 
-**Answer:** `2025-11-14` ✓
-
-**SQL Query:**
 ```sql
 SELECT 
     DATE(lpep_pickup_datetime) AS pickup_day,
@@ -77,23 +81,17 @@ LIMIT 1;
 ```
 
 **Result:**
-```
-+------------+--------------+
-| pickup_day | max_distance |
-|------------+--------------|
-| 2025-11-14 | 88.03        |
-+------------+--------------+
-```
+- Date: 2025-11-14
+- Distance: 88.03 miles
+
+**Answer: 2025-11-14**
 
 ---
 
-## Question 5: Biggest Pickup Zone
+### Question 5: Top Revenue Pickup Zone
 
-**Question:** Which was the pickup zone with the largest total_amount (sum of all trips) on November 18th, 2025?
+Calculated total revenue by pickup zone for November 18, 2025.
 
-**Answer:** `East Harlem North` ✓
-
-**SQL Query:**
 ```sql
 SELECT
     t."Zone",
@@ -114,23 +112,17 @@ LIMIT 1;
 ```
 
 **Result:**
-```
-+-------------------+-------------------+
-| Zone              | total_amount_sum  |
-|-------------------+-------------------|
-| East Harlem North | 9281.92           |
-+-------------------+-------------------+
-```
+- Zone: East Harlem North
+- Total Amount: $9,281.92
+
+**Answer: East Harlem North**
 
 ---
 
-## Question 6: Largest Tip
+### Question 6: Highest Tip Analysis
 
-**Question:** For the passengers picked up in the zone named "East Harlem North" in November 2025, which was the drop off zone that had the largest tip?
+Found the drop-off zone with the highest tip for trips originating from East Harlem North in November 2025.
 
-**Answer:** `Yorkville West` ✓
-
-**SQL Query:**
 ```sql
 SELECT
     drop_zone."Zone" AS dropoff_zone_name,
@@ -153,50 +145,43 @@ LIMIT 1;
 ```
 
 **Result:**
-```
-+-------------------+------------+
-| dropoff_zone_name | tip_amount |
-|-------------------+------------|
-| Yorkville West    | 81.89      |
-+-------------------+------------+
-```
+- Drop-off Zone: Yorkville West
+- Tip Amount: $81.89
+
+**Answer: Yorkville West**
 
 ---
 
-## Question 7: Terraform Workflow
+### Question 7: Terraform Workflow
 
-**Question:** Which of the following sequences, respectively, describes the workflow for:
-1. Downloading the provider plugins and setting up backend
-2. Generating proposed changes and auto-executing the plan
-3. Remove all resources managed by terraform
+The correct sequence for Terraform operations:
 
-**Answer:** `terraform init, terraform apply -auto-approve, terraform destroy` ✓
+1. **Initialize**: `terraform init` - Downloads providers and configures backend
+2. **Apply**: `terraform apply -auto-approve` - Creates/updates infrastructure without manual confirmation
+3. **Destroy**: `terraform destroy` - Removes all managed resources
 
-**Explanation:**
-- **`terraform init`**: Downloads provider plugins and sets up backend
-- **`terraform apply -auto-approve`**: Generates and auto-executes the plan
-- **`terraform destroy`**: Removes all resources managed by Terraform
+**Answer: terraform init, terraform apply -auto-approve, terraform destroy**
 
 ---
 
-## Data Sources
+## Database Schema
 
-**Green Taxi Trips Data (November 2025):**
-```bash
-wget https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2025-11.parquet
-```
+### Tables Used
+- `green_taxi_data` - Trip records with pickup/dropoff times, distances, amounts
+- `taxi_zone_lookup` - Zone ID to zone name mapping
 
-**Taxi Zone Lookup:**
-```bash
-wget https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv
-```
+### Key Columns
+- `lpep_pickup_datetime` - Trip start timestamp
+- `trip_distance` - Distance in miles
+- `total_amount` - Total fare amount
+- `tip_amount` - Tip given by passenger
+- `PULocationID` - Pickup location zone ID
+- `DOLocationID` - Drop-off location zone ID
 
 ---
 
-## Repository Information
+## Notes
 
-This repository contains the homework solutions for Module 1 of the Data Engineering Zoomcamp 2026.
+All SQL queries were executed against a PostgreSQL 17 database running in Docker. Data was ingested using a custom Python script that reads Parquet files and loads them into PostgreSQL tables.
 
-**Course Link:** [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp/)
-
-**Submission Form:** [Submit Homework](https://courses.datatalks.club/de-zoomcamp-2026/homework/hw1)
+See [hm.sql](./hm.sql) for the complete SQL query collection.
